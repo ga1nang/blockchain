@@ -50,11 +50,12 @@ class account:
             num, mod = divmod(num, 58)
             result = BASE58_ALPHABET[mod] + result
             
-        self.publicKey = prefix + result
+        self.PublicAddress = prefix + result
         
         print(f"Private key {self.privateKey}")
-        print(f"Public key {self.publicKey}") 
+        print(f"Public key {self.PublicAddress}") 
         print(f"Xpoint {xpoint} \nYpoint {ypoint}")       
+        
         
 if __name__ == '__main__':
     acct = account()

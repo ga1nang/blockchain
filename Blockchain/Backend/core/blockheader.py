@@ -22,7 +22,7 @@ class BlockHeader:
                                       str(self.timestamp) + self.bits + str(self.nonce)).encode()).hex()
             self.nonce += 1
         message = f"Mining started {self.nonce}"
-        print(f"\r{message:<50}", end='', flush=True)
+        #print(f"\r{message:<50}", end='\r', flush=True)
 
 
 

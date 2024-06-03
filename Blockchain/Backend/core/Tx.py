@@ -102,9 +102,15 @@ class Tx:
         der = private_key.sign(z).der()
         sig = der + SIGHASH_ALL.to_bytes(1, 'big')
         sec = private_key.point.sec()
-        self.tx_ins[input_index].script_sig = Script(sig, sec)
+        self.tx_ins[input_index].script_sig = Script([sig, sec])
     
     
+    def verify_input(self, input_index, script_pubkey):
+        tx_in = self.tx_ins[input_index]
+        z = self.sign_hash(input_index, script_pubkey)
+        combined = tx_in.script_sig + script_pubkey
+        return combined.evaluate(z)
+
 
     def is_coinbase(self):
         #Check that there is exactly 1 input
