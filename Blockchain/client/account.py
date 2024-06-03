@@ -1,8 +1,10 @@
 import sys
 sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 from Blockchain.Backend.core.EllepticCurve.EllepticCurve import Sha256Point
-import secrets
+from Blockchain.Backend.core.database.database import AccountDB
 from Blockchain.Backend.util.util import hash160, hash256
+
+import secrets
 
 
 class account:
@@ -57,3 +59,4 @@ class account:
 if __name__ == '__main__':
     acct = account()
     acct.createKeys()
+    AccountDB().write([acct.__dict__])
