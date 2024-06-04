@@ -3,7 +3,7 @@ sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 
 from Blockchain.Backend.core.block import Block
 from Blockchain.Backend.core.blockheader import BlockHeader
-from Blockchain.Backend.util.util import hash256, merkle_root
+from Blockchain.Backend.util.util import hash256, merkle_root, target_to_bits
 from Blockchain.Backend.core.database.database import BlockChainDB
 from Blockchain.Backend.core.Tx import CoinbaseTx
 from multiprocessing import Process, Manager
@@ -13,11 +13,14 @@ import time
 
 ZERO_HASH = '0' * 64
 VERSION = 1
+INITIAL_TARGET = 0x0000FFFF00000000000000000000000000000000000000000000000000000000
 
 class Blockchain:
     def __init__(self, utxos, MemPool):
         self.utxos = utxos
         self.MemPool = MemPool
+        self.current_target = INITIAL_TARGET
+        self.bits = target_to_bits(INITIAL_TARGET)
         
     def GenesisBlock(self):
         BlockHeight = 0
@@ -54,6 +57,7 @@ class Blockchain:
     
     #Read transaction from Memory Pool
     def read_transaction_from_memorypool(self):
+        self.Blocksize = 80
         self.TxIds = []
         self.addTransactionsInBlock = []
         self.remove_spent_transactions = []
@@ -61,6 +65,7 @@ class Blockchain:
         for tx in self.MemPool:
             self.TxIds.append(bytes.fromhex(tx))
             self.addTransactionsInBlock.append(self.MemPool[tx])
+            self.Blocksize += len(self.MemPool[tx].serialize())
             
             for spent in self.MemPool[tx].tx_ins:
                 self.remove_spent_transactions.append([spent.prev_tx, spent.prev_index])
@@ -102,6 +107,7 @@ class Blockchain:
         timestamp = int(time.time())
         coinBaseInstance = CoinbaseTx(BlockHeight)
         coinBaseTx = coinBaseInstance.CoinbaseTransaction()
+        self.Blocksize += len(coinBaseTx.serialize())
         
         coinBaseTx.tx_outs[0].amount = coinBaseTx.tx_outs[0].amount + self.fee
         #print(f"Fee is {self.fee}")
@@ -110,16 +116,16 @@ class Blockchain:
         self.addTransactionsInBlock.insert(0, coinBaseTx)
         
         merkelRoot = merkle_root(self.TxIds)[::-1].hex()
-        bits = "ffff001f"
-        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, bits)
-        blockheader.mine()
+
+        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, self.bits)
+        blockheader.mine(self.current_target)
         self.remove_spent_Transactions()
         self.remove_transaction_from_memorypool()
         print(f"{BlockHeight}")
         
         self.store_utxos_in_cache()
         self.convert_to_json()
-        self.write_on_disk([Block(BlockHeight, 1, blockheader.__dict__, 1, self.TxJson).__dict__])
+        self.write_on_disk([Block(BlockHeight, self.Blocksize, blockheader.__dict__, 1, self.TxJson).__dict__])
         
     def main(self):
         lastBlock = self.fetch_last_block()
