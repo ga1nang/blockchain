@@ -59,7 +59,7 @@ class Script:
                         print(f"Error in Signature Verification")
                         return False
                 
-                if not operation(stack):
+                elif not operation(stack):
                         print(f"Error in Signature Verification")
                         return False
                 

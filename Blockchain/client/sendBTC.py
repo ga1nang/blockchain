@@ -61,12 +61,12 @@ class SendBTC:
             else:
                 break
             
-            self.isBalanceEnough = True
+        self.isBalanceEnough = True
             
-            if self.Total < self.Amount:
-                self.isBalanceEnough = False
+        if self.Total < self.Amount:
+            self.isBalanceEnough = False
                 
-            return TxIns
+        return TxIns
         
     
     
@@ -91,7 +91,6 @@ class SendBTC:
         for index, input in enumerate(self.TxIns):
             self.TxObj.sign_input(index, priv, self.From_address_script_pubkey)
             
-        return True
     
         
     def prepareTransaction(self):
@@ -102,7 +101,7 @@ class SendBTC:
             self.TxObj.TxId = self.TxObj.id()
             self.signTx()
             
-            return self.TxObj()
+            return self.TxObj
         
         return False
             

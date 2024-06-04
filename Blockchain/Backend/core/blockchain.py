@@ -48,6 +48,7 @@ class Blockchain:
         bits = "ffff001f"
         blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, bits)
         blockheader.mine()
+        print(f"{BlockHeight}")
         
         self.store_utxos_in_cache(coinBaseTx)
         self.write_on_disk([Block(BlockHeight, 1, blockheader.__dict__, 1, coinBaseTx.to_dict()).__dict__])

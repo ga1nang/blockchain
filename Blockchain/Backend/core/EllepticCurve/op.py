@@ -6,6 +6,8 @@ def op_dup(stack):
         return False
     stack.append(stack[-1])
     
+    return True
+    
     
 def op_hash160(stack):
     if len(stack) < 1:
