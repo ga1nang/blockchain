@@ -1,7 +1,12 @@
 import sys
 sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 
-from Blockchain.Backend.util.util import int_to_little_endian, encode_varint
+from Blockchain.Backend.util.util import (
+    int_to_little_endian,
+    encode_varint,
+    read_varint,
+    little_endian_to_int
+)
 from Blockchain.Backend.core.EllepticCurve.op import OP_CODE_FUNCTION
 
 class Script:
@@ -42,6 +47,46 @@ class Script:
                 
         total = len(result)
         return encode_varint(total) + result   
+    
+    
+    @classmethod
+    def parse(cls, s):
+        # get the length of the entire field
+        length = read_varint(s)
+        cmds = []
+        # initialize the number of bytes we've read to 0
+        count = 0
+        # loop until we've read length bytes
+        while count < length:
+            current = s.read(1)
+            count += 1
+            current_byte = current[0]
+
+            if current_byte >= 1 and current_byte <= 75:
+                n = current_byte
+                cmds.append(s.read(n))
+                count += n
+                
+            elif current_byte == 76:
+                # op_pushdata1
+                data_length = little_endian_to_int(s.read(1))
+                cmds.append(s.read(data_length))
+                count += data_length + 1
+                
+            elif current_byte == 77:
+                # op_pushdata2
+                data_length = little_endian_to_int(s.read(2))
+                cmds.append(s.read(data_length))
+                count += data_length + 2
+                
+            else:
+                op_code = current_byte
+                cmds.append(op_code)
+                
+        if count != length:
+            raise SyntaxError('parsing script failed')
+        return cls(cmds)
+
     
     
     def evaluate(self, z):

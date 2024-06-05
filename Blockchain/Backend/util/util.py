@@ -8,11 +8,14 @@ from math import log
 
 from Blockchain.Backend.core.EllepticCurve.EllepticCurve import BASE58_ALPHABET
 
+
 def hash256(s):
     return hashlib.sha256(hashlib.sha256(s).digest()).digest()
 
+
 def hash160(s):
     return RIPEMD160.new(sha256(s).digest()).digest()
+
 
 def bytes_needed(n):
     if n == 0:
@@ -20,13 +23,16 @@ def bytes_needed(n):
     
     return int(log(n, 256)) + 1
 
+
 def int_to_little_endian(n, length):
     """Int_to_little_endian takes an interger and return the little-endian byte sequence of length"""
     return n.to_bytes(length, "little")
 
+
 def little_endian_to_int(b):
     """takes a byte sequence and returns an integer"""
     return int.from_bytes(b, "little")
+
 
 def encode_base58(s):
     #determine how many 0 bytes
@@ -46,6 +52,7 @@ def encode_base58(s):
         
     return prefix + result
 
+
 def decode_base58(s):
     num = 0
     
@@ -61,8 +68,26 @@ def decode_base58(s):
     
     return combined[1:-4]
 
+
+def read_varint(s):
+    #read_varint reads a variable integer from a stream
+    i = s.read(1)[0]
+    if i == 0xfd:
+        # 0xfd means the next two bytes are the number
+        return little_endian_to_int(s.read(2))
+    elif i == 0xfe:
+        # 0xfe means the next four bytes are the number
+        return little_endian_to_int(s.read(4))
+    elif i == 0xff:
+        # 0xff means the next eight bytes are the number
+        return little_endian_to_int(s.read(8))
+    else:
+        # anything else is just the integer
+        return i
+
+
 def encode_varint(i):
-    """encodes an integer as a varint"""
+    #encodes an integer as a varint
     if i < 0xFD:
         return bytes([i])
     elif i < 0x10000:
@@ -110,3 +135,9 @@ def target_to_bits(target):
         coefficient = raw_bytes[:3]  # <4>
     new_bits = coefficient[::-1] + bytes([exponent])  # <5>
     return new_bits   
+
+
+def bits_to_target(bits):
+    exponent = bits[-1]
+    coefficient = little_endian_to_int(bits[:-1])
+    return coefficient * 256**(exponent - 3)

@@ -1,10 +1,12 @@
+import sys
+sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
+
 from io import BytesIO
 from Blockchain.Backend.util.util import (
     int_to_little_endian,
     little_endian_to_int,
     hash256,
-    encode_varint,
-    read_varint
+    encode_varint
 )
 
 NETWORK_MAGIC = b'\xf9\xbe\xb4\xd9'
@@ -18,7 +20,7 @@ class NetworkEnvelope:
         self.payload = payload
         self.magic = NETWORK_MAGIC
         
-        
+    @classmethod
     def parse(cls, s):
         magic = s.read(4)
         

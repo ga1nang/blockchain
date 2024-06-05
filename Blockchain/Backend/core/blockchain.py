@@ -41,6 +41,9 @@ class Blockchain:
         return blockchainDB.lastBlock()
     
     
+    
+    
+    
     #start the sync node
     def startSync(self):
         node = NodeDB()
@@ -50,7 +53,7 @@ class Blockchain:
             #try to connect and download data
             if localHostPort != port:
                 sync = syncManager(localHost, port)
-                sync.startDownload()
+                sync.startDownload(port)
     
     
     #keep track of all the unspent Transaction in cache memory for fast retrival
@@ -136,7 +139,7 @@ class Blockchain:
         
         merkelRoot = merkle_root(self.TxIds)[::-1].hex()
 
-        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, self.bits)
+        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, self.bits, nonce=0)
         blockheader.mine(self.current_target)
         self.remove_spent_Transactions()
         self.remove_transaction_from_memorypool()
