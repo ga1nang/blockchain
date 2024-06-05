@@ -53,7 +53,7 @@ class Blockchain:
             #try to connect and download data
             if localHostPort != port:
                 sync = syncManager(localHost, port)
-                sync.startDownload(port)
+                sync.startDownload(localHostPort - 1, port)
     
     
     #keep track of all the unspent Transaction in cache memory for fast retrival

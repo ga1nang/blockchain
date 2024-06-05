@@ -19,6 +19,7 @@ class Node:
     
     def connect(self, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.bind((self.host, port))
         self.socket.connect((self.host, self.port))
         return self.socket
     

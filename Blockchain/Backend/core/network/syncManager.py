@@ -4,7 +4,7 @@ sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 from Blockchain.Backend.core.blockheader import BlockHeader
 from Blockchain.Backend.core.block import Block
 from Blockchain.Backend.core.network.connection import Node
-from Blockchain.Backend.core.database.database import BlockChainDB 
+from Blockchain.Backend.core.database.database import BlockChainDB, NodeDB 
 from Blockchain.Backend.core.network.network import requestBlock, NetworkEnvelope, FinishedSending
 from Blockchain.Backend.util.util import little_endian_to_int
 from threading import Thread
@@ -31,6 +31,9 @@ class syncManager:
         envelope = self.server.read()
         
         try:
+            if len(str(self.addr[1])) == 4:
+                self.addNode()
+            
             if envelope.command == requestBlock.command:
                 start_block, end_block = requestBlock.parse(envelope.stream())
                 self.sendBlockToRequestor(start_block)
@@ -38,6 +41,14 @@ class syncManager:
         except Exception as e:
             print(f"Error while processing the client request \n {e}")
      
+    
+    def addNode(self):
+        nodeDb = NodeDB()
+        portList = nodeDb.read()
+
+        if self.addr[1] and (self.addr[1] + 1) not in portList:
+            nodeDb.write([self.addr[1] + 1])
+    
      
     def sendBlockToRequestor(self, start_block):
         blocksToSend = self.fetchBlocksFromBlockchain(start_block)
@@ -84,7 +95,7 @@ class syncManager:
         return blocksToSend
         
         
-    def startDownload(self, port):
+    def startDownload(self, localhost, port):
         lastBlock = BlockChainDB().lastBlock()
         
         if not lastBlock:
@@ -96,7 +107,7 @@ class syncManager:
         
         getHeaders = requestBlock(startBlock=startBlock)
         self.connect = Node(self.host, port)
-        self.socket = self.connect.connect(port)
+        self.socket = self.connect.connect(localhost)
         self.stream = self.socket.makefile('rb', None)
         self.connect.send(getHeaders)
         
