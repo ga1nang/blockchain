@@ -125,7 +125,13 @@ class Blockchain:
         
         self.store_utxos_in_cache()
         self.convert_to_json()
-        self.write_on_disk([Block(BlockHeight, self.Blocksize, blockheader.__dict__, 1, self.TxJson).__dict__])
+        self.write_on_disk(
+            [
+                Block(
+                    BlockHeight, self.Blocksize, blockheader.__dict__, len(self.TxJson), self.TxJson
+                ).__dict__
+            ]
+        )
         
     def main(self):
         lastBlock = self.fetch_last_block()
