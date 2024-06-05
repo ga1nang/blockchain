@@ -1,13 +1,15 @@
 import sys
 sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 
+import configparser
 from Blockchain.Backend.core.block import Block
 from Blockchain.Backend.core.blockheader import BlockHeader
 from Blockchain.Backend.util.util import hash256, merkle_root, target_to_bits
-from Blockchain.Backend.core.database.database import BlockChainDB
+from Blockchain.Backend.core.database.database import BlockChainDB, NodeDB
 from Blockchain.Backend.core.Tx import CoinbaseTx
 from multiprocessing import Process, Manager
 from Blockchain.Frontend.run import main
+from Blockchain.Backend.core.network.syncManager import syncManager
 
 import time
 
@@ -22,18 +24,33 @@ class Blockchain:
         self.current_target = INITIAL_TARGET
         self.bits = target_to_bits(INITIAL_TARGET)
         
+        
     def GenesisBlock(self):
         BlockHeight = 0
         prevBlockHash = ZERO_HASH
         self.addBlock(BlockHeight, prevBlockHash)
         
+        
     def write_on_disk(self, block):
         blockchainDB = BlockChainDB()
         blockchainDB.write(block)
         
+        
     def fetch_last_block(self):
         blockchainDB = BlockChainDB()
         return blockchainDB.lastBlock()
+    
+    
+    #start the sync node
+    def startSync(self):
+        node = NodeDB()
+        portList = node.read()
+        
+        for port in portList:
+            #try to connect and download data
+            if localHostPort != port:
+                sync = syncManager(localHost, port)
+                sync.startDownload()
     
     
     #keep track of all the unspent Transaction in cache memory for fast retrival
@@ -77,6 +94,7 @@ class Blockchain:
             if tx.hex() in self.MemPool:
                 del self.MemPool[tx.hex()]
             
+            
     def convert_to_json(self):
         self.TxJson = []
         
@@ -100,6 +118,7 @@ class Blockchain:
                 self.output_amount += tx_out.amount
 
         self.fee = self.input_amount - self.output_amount
+    
     
     def addBlock(self, BlockHeight, prevBlockHash):
         self.read_transaction_from_memorypool()
@@ -133,6 +152,7 @@ class Blockchain:
             ]
         )
         
+        
     def main(self):
         lastBlock = self.fetch_last_block()
         if lastBlock is None:
@@ -144,12 +164,28 @@ class Blockchain:
             self.addBlock(BlockHeight, prevBlockHash)
         
 if __name__ == "__main__":
+    
+    #load host from the config file
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    localHost = config['DEFAULT']['host']
+    localHostPort = int(config['MINER']['port'])
+    webport = int(config['Webhost']['port'])
+    
     with Manager() as manager:
         utxos = manager.dict()
         MemPool = manager.dict()
         
-        webapp = Process(target=main, args=(utxos, MemPool))
+        webapp = Process(target=main, args=(utxos, MemPool, webport))
         webapp.start()
         
+        #start the server
+        sync = syncManager(localHost, localHostPort)
+        startServer = Process(target = sync.spinUpTheServer)
+        startServer.start()
+        
         blockchain = Blockchain(utxos, MemPool)
+        blockchain.startSync()
         blockchain.main()
+        
+        

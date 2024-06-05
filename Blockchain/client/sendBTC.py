@@ -50,7 +50,7 @@ class SendBTC:
     
         for Txbyte in newutxos:
             #if the total is enough we don't need to combine the transaction
-            if self.Total < self.Amount:
+            if self.Total < self.Amount + 1:
                 TxObj = newutxos[Txbyte]
                 #combine multiple transaction
                 for index, txout in enumerate(TxObj.tx_outs):
