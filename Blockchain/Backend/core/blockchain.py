@@ -46,15 +46,17 @@ class Blockchain:
     
     #start the sync node
     def startSync(self):
-        node = NodeDB()
-        portList = node.read()
+        try:
+            node = NodeDB()
+            portList = node.read()
         
-        for port in portList:
-            #try to connect and download data
-            if localHostPort != port:
-                sync = syncManager(localHost, port)
-                sync.startDownload(localHostPort - 1, port)
-    
+            for port in portList:
+                #try to connect and download data
+                if localHostPort != port:
+                    sync = syncManager(localHost, port)
+                    sync.startDownload(localHostPort - 1, port)
+        except Exception as err:
+            print(f"Error while downloading")
     
     #keep track of all the unspent Transaction in cache memory for fast retrival
     def store_utxos_in_cache(self):

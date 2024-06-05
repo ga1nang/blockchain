@@ -5,7 +5,7 @@ from Blockchain.Backend.core.blockheader import BlockHeader
 from Blockchain.Backend.core.block import Block
 from Blockchain.Backend.core.network.connection import Node
 from Blockchain.Backend.core.database.database import BlockChainDB, NodeDB 
-from Blockchain.Backend.core.network.network import requestBlock, NetworkEnvelope, FinishedSending
+from Blockchain.Backend.core.network.network import requestBlock, NetworkEnvelope, FinishedSending, portlist
 from Blockchain.Backend.util.util import little_endian_to_int
 from threading import Thread
 
@@ -56,16 +56,25 @@ class syncManager:
         try:
             self.sendBlock(blocksToSend)
             #self.sendSecondryChain()
-            #self.sendPortlist()
+            self.sendPortlist()
             self.sendFinishedMessage()
         except Exception as e:
             print(f"Unable to send the blocks \n {e}")
     
     
+    def sendPortlist(self):
+        nodeDB = NodeDB()
+        portLists = nodeDB.read()
+
+        portLst = portlist(portLists)
+        envelope = NetworkEnvelope(portLst.command, portLst.serialize())
+        self.conn.sendall(envelope.serialize())
+    
+    
     def sendFinishedMessage(self):
         MessageFinish = FinishedSending()
-        #envelope = NetworkEnvelope(MessageFinish.command, MessageFinish.serialize())
-        self.conn.send(MessageFinish.serialize())
+        envelope = NetworkEnvelope(MessageFinish.command, MessageFinish.serialize())
+        self.conn.send(envelope.serialize())
     
     
     def sendBlock(self, blockstoSend):
@@ -118,6 +127,17 @@ class syncManager:
                 print(f"All Blocks Received")
                 self.socket.close()
                 break
+            
+            
+            if envelope.command == b'portlist':
+                ports = portlist.parse(envelope.stream())
+                nodeDb = NodeDB()
+                portlists = nodeDb.read()
+
+                for port in ports:
+                    if port not in portlists:
+                        nodeDb.write([port])
+            
                 
             if envelope.command == b'block':
                 blockObj = Block.parse(envelope.stream())

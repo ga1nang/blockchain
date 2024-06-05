@@ -6,7 +6,8 @@ from Blockchain.Backend.util.util import (
     int_to_little_endian,
     little_endian_to_int,
     hash256,
-    encode_varint
+    encode_varint,
+    read_varint
 )
 
 NETWORK_MAGIC = b'\xf9\xbe\xb4\xd9'
@@ -83,6 +84,31 @@ class requestBlock:
         res = self.startBlock
         res += self.endBlock
         return res
+    
+    
+class portlist:
+    command = b'portlist'
+    def __init__(self, ports = None):
+        self.ports = ports
+
+    @classmethod
+    def parse(cls, s):
+        ports = []
+        length = read_varint(s)
+
+        for _ in range(length):
+            port = little_endian_to_int(s.read(4))
+            ports.append(port)
+        
+        return ports
+
+    def serialize(self):
+        result = encode_varint(len(self.ports))
+
+        for port in self.ports:
+            result += int_to_little_endian(port, 4)
+        
+        return result    
     
     
 class FinishedSending:
