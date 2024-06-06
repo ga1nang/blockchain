@@ -1,6 +1,6 @@
 """ 
 Copyright (c) 2021 Codiesalert.com
-These scripts shouldn't be used for commercial purpose without Codies Alert Permission
+These scripts shouldn't be used for commercial purpose without Chicken Coin Permission
 Any violations may lead to legal action
 """
 
