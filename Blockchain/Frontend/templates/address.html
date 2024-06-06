@@ -16,7 +16,7 @@ content%}
   </div>
   <div class="TxDetails">
     <div class="TxItemDetail PrevBlockHash">{{ Txs|length }}</div>
-    <div class="TxItemDetail BlockSize">{{ amount/100000 }} BTC</div>
+    <div class="TxItemDetail BlockSize">{{ amount/100000 }} CKC</div>
   </div>
 </div>
 
@@ -59,7 +59,7 @@ content%}
       (tx_out['amount']/100000)|int %} {% else %} {% set amount =
       (tx_out['amount']/100000) %} {% endif %}
       <a href="{{ url_for('address', publicAddress = pubAddress) }}">
-        #{{ loop.index0 }} {{ pubAddress }} : {{ amount }} BTC</a
+        #{{ loop.index0 }} {{ pubAddress }} : {{ amount }} CKC</a
       >
     </div>
     {% endfor %}

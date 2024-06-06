@@ -85,7 +85,7 @@ content%}
       (tx_out['amount']/100000)|int %} {% else %} {% set amount =
       (tx_out['amount']/100000) %} {% endif %}
       <a href="{{ url_for('address', publicAddress = pubAddress) }}">
-        #{{ loop.index0 }} {{ pubAddress }} : {{ amount }} BTC</a
+        #{{ loop.index0 }} {{ pubAddress }} : {{ amount }} CKC</a
       >
     </div>
     {% endfor %}

@@ -9,8 +9,8 @@
 :root {
   --navHoverColor: linear-gradient(
     to right,
-    rgba(11, 67, 71, 0.719),
-    hsla(157, 76%, 26%, 0.781)
+    rgba(0, 38, 54, 0.8),
+    rgba(0, 123, 123, 0.8)
   );
 }
 
@@ -26,10 +26,10 @@ body {
       180deg,
       rgba(0, 0, 0, 0.9),
       rgba(0, 0, 0, 0.1),
-      rgba(212, 88, 216, 0.1),
-      rgba(0, 0, 0.5)
+      rgba(0, 128, 128, 0.1),
+      rgba(0, 0, 0, 0.5)
     ),
-    url("/static/images/wal5.jpg");
+    url("/static/images/cover.png");
 
   background-size: cover;
   background-position: center;
@@ -53,8 +53,9 @@ section ul {
 section li a {
   position: relative;
   float: left;
-  color: white;
+  color: #1b98e0;
   font-size: 1.3em;
+  font-weight: bold;
   text-align: center;
   margin-left: 1.5em;
   padding: 0.8em 0.8em;
@@ -63,7 +64,7 @@ section li a {
 
 section li a:hover {
   /* background-image: var(--navHoverColor); */
-  border-bottom: 3px solid rgb(0, 247, 255);
+  border-bottom: 3px solid #1b98e0;
 }
 
 section li a:active {
@@ -72,7 +73,7 @@ section li a:active {
 }
 
 section li .active {
-  border-bottom: 3px solid rgb(0, 247, 255);
+  border-bottom: 3px solid #1b98e0;
 }
 
 .search-container {
@@ -85,19 +86,19 @@ section li .active {
   width: 27em;
   padding: 1em;
   margin-top: 0.1em;
-  font-size: 1em;
+  font-size: 1.2em;
   border: none;
-  color: whitesmoke;
+  color: #e0e0e0;
   /* background-image: linear-gradient(to right, rgba(230,85,237,255),rgba(254,238,148,255)); */
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
   );
 }
 
 .search-container input::placeholder {
-  color: whitesmoke;
+  color: #e0e0e0;
 }
 
 .search-container button {
@@ -109,7 +110,7 @@ section li .active {
 }
 
 .search-container input:focus {
-  box-shadow: 0 0 2em #8df3eb;
+  box-shadow: 0 0 2em #1b98e0;
 }
 
 .search-container button img {
@@ -125,9 +126,11 @@ section li .active {
   position: absolute;
   text-align: center;
   margin-left: 3.5em;
-  font-size: 7em;
+  font-size: 6em;
   top: 30%;
-  color: whitesmoke;
+  color: #e0e0e0;
+  text-shadow: 0 0 3px #e0e0e0, 0 0 6px #e0e0e0;
+
 
   /* background: linear-gradient(to bottom, rgba(231,84,237,255)    , rgba(255,239,148,255)    );
     -webkit-background-clip: text;
@@ -137,10 +140,12 @@ section li .active {
 .mainText > h2 {
   position: absolute;
   text-align: center;
-  margin-left: 3em;
+  margin-left: 12em;
   margin-right: 1em;
-  font-size: 3em;
+  font-size: 1.5em;
   top: 50%;
+  color: #e0e0e0;
+
 }
 
 /* Style Sheet for Block html */
@@ -149,8 +154,8 @@ section li .active {
   grid-template-columns: auto;
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
   );
   /* background-color:rgb(204, 0, 255); */
   margin: 8em 5em 0em 5em;
@@ -180,13 +185,13 @@ section li .active {
   margin-left: 1em;
   padding: 1em 1em 1em 6em;
   font-weight: bold;
-  border-top: 0.01em solid wheat;
+  border-top: 0.01em solid #e0e0e0;
 }
 
 .loadmore {
-  background-color: rgb(204, 0, 255);
+  background-color: #0b3d91;
   border: none;
-  color: whitesmoke;
+  color: #e0e0e0;
   padding: 1em;
   text-decoration: none;
   text-align: center;
@@ -204,7 +209,7 @@ section li .active {
 .grid-container #detail:hover {
   /* background-color: rgb(64, 224, 163); */
   /* background-color: rgba(254,120,150,230); */
-  background-color: rgb(225, 0, 255);
+  background-color: #1b98e0;
   border-radius: 4em;
 }
 
@@ -238,8 +243,8 @@ section li .active {
   grid-template-columns: auto;
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
   );
   margin: 8em 5em 0em 5em;
   border-radius: 1em;
@@ -263,7 +268,7 @@ section li .active {
   margin-left: 1em;
   padding: 1em;
   font-weight: bold;
-  border-top: 0.01em solid wheat;
+  border-top: 0.01em solid #e0e0e0;
 }
 
 .grid-container1 a {
@@ -272,7 +277,7 @@ section li .active {
 
 .grid-container1 #detail:hover {
   /* background-color: rgb(64, 224, 163); */
-  background-color: rgb(225, 0, 255);
+  background-color: #1b98e0;
   border-radius: 4em;
 }
 
@@ -307,7 +312,7 @@ section li .active {
 
 .secNavBar li a {
   display: block;
-  color: white;
+  color: #e0e0e0;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
@@ -318,7 +323,7 @@ section li .active {
 }
 
 .secNavBar .active {
-  background-color: #04aa6d;
+  background-color: #0b3d91;
 }
 
 /* Block Details Styles */
@@ -335,8 +340,8 @@ section li .active {
   grid-template-columns: 20em 1fr;
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
   );
   margin: 1em 5em 0em 5em;
   padding: 1em;
@@ -348,7 +353,7 @@ section li .active {
   text-align: left;
   padding: 1em;
   font-size: 1.1em;
-  border-top: 0.01em solid whitesmoke;
+  border-top: 0.01em solid #e0e0e0;
 }
 
 .grid-container3 .TxHeader h3 {
@@ -360,7 +365,7 @@ section li .active {
   padding: 1em;
   padding-left: 10em;
   font-size: 1.1em;
-  border-top: 0.01em solid whitesmoke;
+  border-top: 0.01em solid #e0e0e0;
 }
 
 .TransactionsHeader {
@@ -381,8 +386,9 @@ section li .active {
   grid-template-columns: 1fr 1fr;
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
+
   );
   margin: 1em 5em 0em 5em;
   border-radius: 1em;
@@ -399,11 +405,11 @@ section li .active {
 }
 
 .TxStyle .TxId a {
-  color: rgb(0, 255, 157);
+  color: #1b98e0;
 }
 
 .TxHeader h1 {
-  color: rgb(0, 255, 242);
+  color: #1b98e0;
 }
 
 .TxStyle h3 {
@@ -413,8 +419,9 @@ section li .active {
 .TxInput {
   background-image: linear-gradient(
     to right,
-    rgb(255, 0, 221),
-    rgb(143, 143, 143)
+    #0b3d91,
+    #1b98e0
+
   );
   border-radius: 1em;
   margin-top: 1em;
@@ -426,8 +433,9 @@ section li .active {
 .Txoutput {
   background-image: linear-gradient(
     to right,
-    rgb(255, 0, 221),
-    rgb(76, 0, 255)
+    #0b3d91,
+    #1b98e0
+
   );
   padding: 1em;
   margin-top: 1em;
@@ -448,7 +456,7 @@ section li .active {
 }
 
 .address .addTag h3 {
-  color: cyan;
+  color: #00ffd1;
 }
 
 /*Send MAAN design*/
@@ -457,8 +465,9 @@ section li .active {
 .wallet-container {
   background-image: linear-gradient(
     to right,
-    rgb(0, 89, 255),
-    rgb(225, 0, 255)
+    #0b3d91,
+    #1b98e0
+
   );
   margin: 8em 5em 0em 5em;
   border-radius: 1em;
@@ -487,8 +496,9 @@ section li .active {
 #form input {
   background-image: linear-gradient(
     to right,
-    rgb(255, 0, 221),
-    rgb(76, 0, 255)
+    #0b3d91,
+    #1b98e0
+
   );
   border-radius: 1em;
   padding: 1em;
@@ -503,8 +513,9 @@ section li .active {
   width: 20vw;
   background-image: linear-gradient(
     to right,
-    rgb(0, 255, 234),
-    rgb(255, 0, 221)
+    #0b3d91,
+    #1b98e0
+
   );
   margin-left: 25em;
   font-size: 1em;

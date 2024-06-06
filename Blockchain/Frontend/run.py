@@ -4,9 +4,11 @@ sys.path.append('E:\\subject\\Distributed_System\\bitcoin')
 from flask import Flask, render_template, request, redirect, url_for
 from Blockchain.client.sendBTC import SendBTC
 from Blockchain.Backend.core.Tx import Tx
-from Blockchain.Backend.core.database.database import BlockChainDB
+from Blockchain.Backend.core.database.database import BlockchainDB, NodeDB
 from Blockchain.Backend.util.util import encode_base58, decode_base58
+from Blockchain.Backend.core.network.syncManager import syncManager
 from hashlib import sha256
+from multiprocessing import Process
 from flask_qrcode import QRcode
 
 app = Flask(__name__)
@@ -57,18 +59,18 @@ def mempool():
             except:
                 ErrorFlag = True
 
-        """" If TxId is not in the Origional list then remove it from the mempool """
+        #If TxId is not in the Origional list then remove it from the mempool 
         for txid in memoryPool:
             if txid not in mempooltxs:
                 del memoryPool[txid]
 
-        """Add the new Tx to the mempool if it is not already there"""
+        #Add the new Tx to the mempool if it is not already there
         for Txid in mempooltxs:
             amount = 0
             TxObj = mempooltxs[Txid]      
             matchFound = False
 
-            """ Total Amount """
+            #Total Amount 
             for txin in TxObj.tx_ins:
                 for block in blocks:
                     for Tx in block['Txs']:
@@ -106,12 +108,12 @@ def search():
     else:
         return redirect(url_for('address', publicAddress = identifier))
 
-""" Read data from the Blockchain """
+#Read data from the Blockchain 
 def readDatabase():
     ErrorFlag = True
     while ErrorFlag:
         try:
-            blockchain = BlockChainDB()
+            blockchain = BlockchainDB()
             blocks = blockchain.read()
             ErrorFlag = False
         except:
@@ -190,15 +192,35 @@ def wallet():
 
             if verified:
                 MEMPOOL[TxObj.TxId] = TxObj
-                # relayTxs = Process(target = broadcastTx, args = (TxObj, localHostPort)) 
-                # relayTxs.start()
+                relayTxs = Process(target = broadcastTx, args = (TxObj, localHostPort)) 
+                relayTxs.start()
                 message = "Transaction added in memory Pool"
 
     return render_template("wallet.html", message=message)
 
-def main(utxos, MemPool, port):
+def broadcastTx(TxObj, localHostPort = None):
+    try:
+        node = NodeDB()
+        portList = node.read()
+
+        for port in portList:
+            if localHostPort != port:
+                sync = syncManager('127.0.0.1', port)
+                try:
+                    sync.connectToHost(localHostPort - 1, port)
+                    sync.publishTx(TxObj)
+                
+                except Exception as err:
+                    pass
+                
+    except Exception as err:
+        pass
+
+def main(utxos, MemPool, port, localPort):
     global UTXOS
     global MEMPOOL
+    global localHostPort 
     UTXOS = utxos
     MEMPOOL = MemPool
-    app.run(port = port)    
+    localHostPort = localPort
+    app.run(port = port)
