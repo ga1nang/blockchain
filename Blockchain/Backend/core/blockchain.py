@@ -177,4 +177,5 @@ if __name__ == "__main__":
         startServer.start()
         
         blockchain = Blockchain(utxos, MemPool)
+        blockchain.startSync(localHost, localPort)
         blockchain.main()
