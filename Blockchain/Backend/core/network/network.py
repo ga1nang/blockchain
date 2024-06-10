@@ -10,7 +10,7 @@ from io import BytesIO
 NETWORK_MAGIC = b'\xf9\xbe\xb4\xd9'
 FINISHED_SENDING = b'\x0a\x11\x09\x07'
 
-class NetworkEnvelop:
+class NetworkEnvelope:
     def __init__(self, command, payload):
         self.command = command
         self.payload = payload

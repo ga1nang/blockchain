@@ -130,6 +130,42 @@ class Tx:
         
         return True
     
+    
+    @classmethod
+    def to_obj(cls, item):
+        TxInList = []
+        TxOutList = []
+        cmds = []
+
+        """ Convert Transaction Input to the object """
+        for tx_in in item['tx_ins']:
+            for cmd in tx_in['script_sig']['cmds']:
+               
+                if tx_in['prev_tx'] == "0000000000000000000000000000000000000000000000000000000000000000":
+                    cmds.append(int_to_little_endian(int(cmd), bytes_needed(int(cmd))))
+                else:
+                    if type(cmd) == int:
+                        cmds.append(cmd)
+                    else:
+                        cmds.append(bytes.fromhex(cmd))
+            TxInList.append(TxIn(bytes.fromhex(tx_in['prev_tx']),tx_in['prev_index'],Script(cmds)))   
+
+        
+        """" Convert Transaction output to Object """
+        cmdsout = []
+        for tx_out in item['tx_outs']:
+            for cmd in tx_out['script_pubkey']['cmds']:
+                if type(cmd) == int:
+                    cmdsout.append(cmd)
+                else:
+                    cmdsout.append(bytes.fromhex(cmd))
+                    
+            TxOutList.append(TxOut(tx_out['amount'],Script(cmdsout)))
+            cmdsout= []
+        
+        return cls(1, TxInList, TxOutList, 0)
+    
+    
     def to_dict(self):
         """
         Convert transaction

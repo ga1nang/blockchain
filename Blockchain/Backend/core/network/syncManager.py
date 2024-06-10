@@ -1,7 +1,8 @@
 import socket
 from threading import Thread
-from Blockchain.Backend.core.network.network import NetworkEnvelop, requestBlock
+from Blockchain.Backend.core.network.network import NetworkEnvelope, requestBlock, FinishedSending
 from Blockchain.Backend.core.database.database import BlockChainDB
+from Blockchain.Backend.core.block import Block
 
 class syncManager:
     def __init__(self, localHost, localPort, remoteHost):
@@ -25,9 +26,56 @@ class syncManager:
         try:
             if envelope.command == requestBlock.command:
                 start_block, end_block = requestBlock.parse(envelope.stream())
+                self.sendBlockToRequestor(start_block)
                 print(f"Start Block is {start_block} \nEnd Block is {end_block}")
         except Exception as e:
             print(f"Error while processing the client request\n{e}")
+            
+            
+    def sendBlockToRequestor(self, start_block):
+        blocksToSend = self.fetchBlocksFromBlockchain(start_block)
+
+        try:
+            self.sendBlock(blocksToSend)
+            self.sendSecondryChain()
+            self.sendPortlist()
+            self.sendFinishedMessage()
+        except Exception as e:
+            print(f"Unable to send the blocks \n {e}")
+            
+            
+    def sendFinishedMessage(self):
+        MessageFinish = FinishedSending()
+        envelope = NetworkEnvelope(MessageFinish.command, MessageFinish.serialize())
+        self.conn.sendall(envelope.serialize())
+            
+            
+    def sendBlock(self, blockstoSend):
+        for block in blockstoSend:
+            cblock = Block.to_obj(block)
+            envelope = NetworkEnvelope(cblock.command, cblock.serialize())
+            self.conn.sendall(envelope.serialize())
+            print(f"Block Sent {cblock.Height}")  
+            
+            
+    def fetchBlocksFromBlockchain(self, start_Block):
+        fromBlocksOnwards = start_Block.hex()
+
+        blocksToSend = []
+        blockchain = BlockChainDB()
+        blocks = blockchain.read()
+
+        foundBlock = False 
+        for block in blocks:
+            if block['BlockHeader']['blockHash'] == fromBlocksOnwards:
+                foundBlock = True
+                continue
+        
+            if foundBlock:
+                blocksToSend.append(block)
+        
+        return blocksToSend
+    
 
     def startDownload(self):
         lastBlock = BlockChainDB().lastBlock()
@@ -70,9 +118,9 @@ class Node:
         self.socket.close()
 
     def send(self, message):
-        envelope = NetworkEnvelop(message.command, message.serialize())
+        envelope = NetworkEnvelope(message.command, message.serialize())
         self.socket.sendall(envelope.serialize())
 
     def read(self):
-        envelope = NetworkEnvelop.parse(self.stream)
+        envelope = NetworkEnvelope.parse(self.stream)
         return envelope

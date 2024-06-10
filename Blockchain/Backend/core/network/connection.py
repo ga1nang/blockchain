@@ -1,5 +1,5 @@
 import socket
-from Blockchain.Backend.core.network.network import NetworkEnvelop, FINISHED_SENDING
+from Blockchain.Backend.core.network.network import NetworkEnvelope, FINISHED_SENDING
 
 class Node:
     def __init__(self, host, port):
@@ -34,10 +34,10 @@ class Node:
         
     
     def send(self, message):
-        envelope = NetworkEnvelop(message.command, message.serialize())
+        envelope = NetworkEnvelope(message.command, message.serialize())
         self.socket.sendall(envelope.serialize())
         
     
     def read(self):
-        envelope = NetworkEnvelop.parse(self.stream)
+        envelope = NetworkEnvelope.parse(self.stream)
         return envelope                                      
