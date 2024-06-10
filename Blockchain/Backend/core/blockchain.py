@@ -133,7 +133,7 @@ class Blockchain:
         
         merkelRoot = merkle_root(self.TxIds)[::-1].hex()
 
-        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, self.bits)
+        blockheader = BlockHeader(VERSION, prevBlockHash, merkelRoot, timestamp, self.bits, nonce=0)
         blockheader.mine(self.current_target)
         self.remove_spent_Transactions()
         self.remove_transaction_from_memorypool()

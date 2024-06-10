@@ -91,6 +91,19 @@ class syncManager:
         self.connect = Node(self.remoteHost, self.localPort)
         self.socket = self.connect.connect(self.remoteHost, self.localPort)
         self.connect.send(getHeaders)
+        
+        while True:
+            self.stream = self.socket.makefile('rb', None)
+            envelope = NetworkEnvelope.parse(self.stream)
+            
+            if envelope.command == b"Finished":
+                print(f"All Blocks Received")
+                self.socket.close()
+                
+            if envelope.command == b"block":
+                blockObj = Block.parse(envelope.stream())
+                print(f"New Block Received : {blockObj.Height}")
+                
 
 class Node:
     def __init__(self, host, port):

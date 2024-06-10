@@ -3,7 +3,8 @@ from Blockchain.Backend.core.Tx import Tx
 from Blockchain.Backend.util.util import (
     little_endian_to_int,
     int_to_little_endian,
-    encode_varint
+    encode_varint,
+    read_varint
 )
 
 class Block:
@@ -14,6 +15,21 @@ class Block:
         self.TxCount = TxCount
         self.Txs = Txs
         
+        
+    @classmethod
+    def parse(cls, s):
+        Height = little_endian_to_int(s.read(4))
+        BlockSize = little_endian_to_int(s.read(4))
+        blockHeader = BlockHeader.parse(s)
+        numTxs = read_varint(s)
+
+        Txs = []
+
+        for _ in range(numTxs):
+            Txs.append(Tx.parse(s))
+
+        return cls(Height, BlockSize, blockHeader, numTxs, Txs)
+    
         
     def serialize(self):
         result = int_to_little_endian(self.Height, 4)
