@@ -137,7 +137,7 @@ class Blockchain:
         blockheader.mine(self.current_target)
         self.remove_spent_Transactions()
         self.remove_transaction_from_memorypool()
-        #print(f"{BlockHeight}")
+        print(f"{BlockHeight}")
         
         self.store_utxos_in_cache()
         self.convert_to_json()

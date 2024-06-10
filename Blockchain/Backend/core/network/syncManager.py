@@ -37,8 +37,8 @@ class syncManager:
 
         try:
             self.sendBlock(blocksToSend)
-            self.sendSecondryChain()
-            self.sendPortlist()
+            #self.sendSecondryChain()
+            #self.sendPortlist()
             self.sendFinishedMessage()
         except Exception as e:
             print(f"Unable to send the blocks \n {e}")
