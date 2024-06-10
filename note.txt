@@ -1,0 +1,7 @@
+change inside the database/node from port to localhost
+change inside the startSync func in the blockchain.py change port into localhost
+change the function startDownload in the syncManager.py 
+payload is serialize data
+change connect function in the connection.py
+in the startDownload function in the line self.connect = Node(self.host, port) -> Node(host, self.port) and self.socket = self.connect.connect(port)
+->elf.socket = self.connect.connect(host)

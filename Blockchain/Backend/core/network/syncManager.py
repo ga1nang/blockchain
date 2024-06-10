@@ -1,0 +1,78 @@
+import socket
+from threading import Thread
+from Blockchain.Backend.core.network.network import NetworkEnvelop, requestBlock
+from Blockchain.Backend.core.database.database import BlockChainDB
+
+class syncManager:
+    def __init__(self, localHost, localPort, remoteHost):
+        self.localHost = localHost
+        self.localPort = localPort
+        self.remoteHost = remoteHost
+
+    def spinUpTheServer(self):
+        self.server = Node(self.localHost, self.localPort)
+        self.server.startServer()
+        print("SERVER STARTED")
+        print(f"[LISTENING] at {self.localHost}:{self.localPort}")
+        
+        while True:
+            self.conn, self.addr = self.server.acceptConnection()
+            handleConn = Thread(target=self.handleConnection)
+            handleConn.start()
+
+    def handleConnection(self):
+        envelope = self.server.read()
+        try:
+            if envelope.command == requestBlock.command:
+                start_block, end_block = requestBlock.parse(envelope.stream())
+                print(f"Start Block is {start_block} \nEnd Block is {end_block}")
+        except Exception as e:
+            print(f"Error while processing the client request\n{e}")
+
+    def startDownload(self):
+        lastBlock = BlockChainDB().lastBlock()
+        
+        if not lastBlock:
+            lastBlockHeader = "0000503b6de3f475e410bc7ad11b480f8fb7c36cab8539ee28955851517a36ee"
+        else:
+            lastBlockHeader = lastBlock["BlockHeader"]["blockHash"]
+            
+        startBlock = bytes.fromhex(lastBlockHeader)
+        
+        getHeaders = requestBlock(startBlock=startBlock)
+        self.connect = Node(self.remoteHost, self.localPort)
+        self.socket = self.connect.connect(self.remoteHost, self.localPort)
+        self.connect.send(getHeaders)
+
+class Node:
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.ADDR = (self.host, self.port)
+
+    def startServer(self):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind(self.ADDR)
+        self.server.listen()
+
+    def connect(self, host, port):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((host, port))
+        return self.socket
+
+    def acceptConnection(self):
+        self.conn, self.addr = self.server.accept()
+        self.stream = self.conn.makefile('rb', None)
+        print("Accepted.....")
+        return self.conn, self.addr
+
+    def closeConnection(self):
+        self.socket.close()
+
+    def send(self, message):
+        envelope = NetworkEnvelop(message.command, message.serialize())
+        self.socket.sendall(envelope.serialize())
+
+    def read(self):
+        envelope = NetworkEnvelop.parse(self.stream)
+        return envelope
