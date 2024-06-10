@@ -8,6 +8,8 @@ from Blockchain.Backend.util.util import (
 )
 
 class Block:
+    command = b'block'
+    
     def __init__(self, Height, Blocksize, BlockHeader, TxCount, Txs):
         self.Height = Height
         self.Blocksize = Blocksize
@@ -29,7 +31,7 @@ class Block:
             Txs.append(Tx.parse(s))
 
         return cls(Height, BlockSize, blockHeader, numTxs, Txs)
-    
+        
         
     def serialize(self):
         result = int_to_little_endian(self.Height, 4)

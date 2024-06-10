@@ -81,7 +81,7 @@ class syncManager:
         lastBlock = BlockChainDB().lastBlock()
         
         if not lastBlock:
-            lastBlockHeader = "0000503b6de3f475e410bc7ad11b480f8fb7c36cab8539ee28955851517a36ee"
+            lastBlockHeader = "00009f94daf2ab70af593ae3711e0d85adfa2962674db6fae4ce8f70adb81ace"
         else:
             lastBlockHeader = lastBlock["BlockHeader"]["blockHash"]
             

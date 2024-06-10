@@ -25,9 +25,9 @@ class BlockHeader:
         timestamp = little_endian_to_int(s.read(4))
         bits = s.read(4)
         nonce = s.read(4)
-        return cls(version, prevBlockHash, merkleRoot, timestamp, bits, nonce)    
-        
-        
+        return cls(version, prevBlockHash, merkleRoot, timestamp, bits, nonce)
+
+
     def serialize(self):
         result = int_to_little_endian(self.version, 4)
         result += self.prevBlockHash[::-1]
@@ -35,7 +35,7 @@ class BlockHeader:
         result += int_to_little_endian(self.timestamp, 4)
         result += self.bits
         result += self.nonce
-        return result 
+        return result  
         
         
     def mine(self, target): 

@@ -61,7 +61,6 @@ class Tx:
     
     @classmethod
     def parse(cls, s):
-              
         version = little_endian_to_int(s.read(4))
         num_inputs = read_varint(s)
         inputs = []
@@ -73,22 +72,20 @@ class Tx:
             outputs.append(TxOut.parse(s))
         locktime = little_endian_to_int(s.read(4))
         return cls(version, inputs, outputs, locktime)
-        
 
     def serialize(self):
         result = int_to_little_endian(self.version, 4)
         result += encode_varint(len(self.tx_ins))
-        
+
         for tx_in in self.tx_ins:
             result += tx_in.serialize()
-            
+
         result += encode_varint(len(self.tx_outs))
-        
+
         for tx_out in self.tx_outs:
             result += tx_out.serialize()
-            
+
         result += int_to_little_endian(self.locktime, 4)
-        
         return result
     
     
@@ -237,8 +234,8 @@ class TxIn:
         result += self.script_sig.serialize()
         result += int_to_little_endian(self.sequence, 4)
         return result
-    
-    
+
+
     @classmethod
     def parse(cls, s):
         prev_tx = s.read(32)[::-1]
@@ -255,11 +252,10 @@ class TxOut:
         
         
     def serialize(self):
-        result = int_to_little_endian(self.amount, 4)
+        result = int_to_little_endian(self.amount, 8)
         result += self.script_pubkey.serialize()
         return result
-    
-    
+
     @classmethod
     def parse(cls,s):
         amount = little_endian_to_int(s.read(8))

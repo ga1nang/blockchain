@@ -20,7 +20,7 @@ class NetworkEnvelope:
     @classmethod
     def parse(cls, s):
         magic = s.read(4)
-        
+
         if magic != NETWORK_MAGIC:
             raise RuntimeError(f"Magic is not right {magic.hex()} vs {NETWORK_MAGIC.hex()}")
         
@@ -30,20 +30,19 @@ class NetworkEnvelope:
         checksum = s.read(4)
         payload = s.read(payloadLen)
         calculatedChecksum = hash256(payload)[:4]
-        
+
         if calculatedChecksum != checksum:
-            raise IOError("Check sum does not match")
+            raise IOError("Checksum does not match")
         
         return cls(command, payload)
-    
-    
+
     def serialize(self):
-        res = self.magic
-        res += self.command + b'\x00' * (12 - len(self.command))
-        res += int_to_little_endian(len(self.payload), 4)
-        res += hash256(self.payload)[:4]
-        res += self.payload
-        return res
+        result = self.magic
+        result += self.command + b'\x00' * (12 - len(self.command))
+        result += int_to_little_endian(len(self.payload), 4)
+        result += hash256(self.payload)[:4]
+        result += self.payload
+        return result 
         
 
     def stream(self):
@@ -66,16 +65,15 @@ class requestBlock:
             
             
     @classmethod
-    def parse(cls, s):
-        startBlock = s.read(32)
-        endBlock = s.read(32)
+    def parse(cls, stream):
+        startBlock = stream.read(32)
+        endBlock = stream.read(32)
         return startBlock, endBlock
-            
-            
+
     def serialize(self):
-        res = self.startBlock
-        res += self.endBlock
-        return res     
+        result = self.startBlock
+        result += self.endBlock
+        return result      
     
     
 class FinishedSending:
@@ -84,13 +82,12 @@ class FinishedSending:
     
     @classmethod
     def parse(cls, s):
-        magic = s.read(4)    
-        
+        magic = s.read(4)
+
         if magic == FINISHED_SENDING:
             return "Finished"
-        
-    
+
     def serialize(self):
-        res = FINISHED_SENDING
-        return res
+        result = FINISHED_SENDING 
+        return result
     
