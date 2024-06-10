@@ -63,7 +63,7 @@ class Node:
     def acceptConnection(self):
         self.conn, self.addr = self.server.accept()
         self.stream = self.conn.makefile('rb', None)
-        print("Accepted.....")
+        print(f"Accepted.....{self.addr}")
         return self.conn, self.addr
 
     def closeConnection(self):

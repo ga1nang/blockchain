@@ -170,7 +170,7 @@ if __name__ == "__main__":
         utxos = manager.dict()
         MemPool = manager.dict()
         
-        otherHost = '172.16.190.37'
+        otherHost = '172.20.10.2'
         
         sync = syncManager(localHost, localPort, otherHost)
         startServer = Process(target=sync.spinUpTheServer)

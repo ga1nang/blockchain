@@ -5,3 +5,5 @@ payload is serialize data
 change connect function in the connection.py
 in the startDownload function in the line self.connect = Node(self.host, port) -> Node(host, self.port) and self.socket = self.connect.connect(port)
 ->elf.socket = self.connect.connect(host)
+
+##change the otherHost in blockchain.py

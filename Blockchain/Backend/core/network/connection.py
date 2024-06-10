@@ -18,6 +18,7 @@ class Node:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #???????
         self.socket.connect((self.host, self.port))
+        print(f"Connected success {self.host} and {self.port}")
         return self.socket
     
     
